@@ -171,7 +171,7 @@
             }
         }
         
-        function post_gists () {
+        function post_gists (isPublic) {
             // $("#created_gist").hide();
             
             // if (current != null) {
@@ -187,6 +187,10 @@
                     "file_name[gistfile1]": $("#gist_file_name").val(),
                     "file_contents[gistfile1]": $("#gist_file_contents").val()
                 };
+                
+                if (isPublic === false) {
+                    data["action_button"] = "private";
+                }
             
                 $.ajax({
                     type: "POST",
@@ -199,7 +203,8 @@
                         }
                     },
                     complete: function (req) {
-                        if (req.status == 200 || req.status == 302) {
+                        // it is weird to get status 0
+                        if (req.status == 200 || req.status == 302 || req.status == 0) {
                             // looks like it is impossible for now
                             // due to chrome follows redirects
                             // var $a = $("#created_gist");
@@ -440,7 +445,13 @@
               </select>
             <textarea id="gist_file_contents" name="gist_file_contents" rows="8" cols="40" onchange="on_content_change();"></textarea><br/>
             <a id='created_gist' href='javascript: void(0);'>Gist</a>
-<!--            <input type="button" name="more" value="One more gist" id="more"/> --><input type="button" name="send" value="Send" id="Send" onclick="post_gists();"/>
+<!--            <input type="button" name="more" value="One more gist" id="more"/> -->
+<button name="post_private" id="post_private" onclick="post_gists(false);">
+    <span><img src="private.png"/> Create Private Gist</span>
+</button>
+<button name="post_public" id="post_public" onclick="post_gists(true);">
+    <span><img src="public.png"/> Create Public Gist</span>
+</button>
         </div>
     </div>
 </body>
