@@ -6,6 +6,19 @@ What is it?
 
 Gistamine is a Google Chrome extension that allows creating Gists on Github
 
+Installation
+------------
+
+###Simple way
+This process is very simple. Extension is hosted on Google's extension directory and could be directly accessed via link https://chrome.google.com/extensions/detail/jilpffgcnfbkpbhfigefcpgekcmkebcl
+
+###Advanced
+1.  Execute: git clone git@github.com:dashin/gistamine.git
+2.  Open Google Chrome -> Settings -> Extensions
+3.  Click on "Developer Mode"
+4.  Load unpacked extension...
+5.  Chose the gistamine directory and here you are
+
 Features
 --------
 
