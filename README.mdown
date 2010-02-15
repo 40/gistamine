@@ -1,0 +1,18 @@
+Gistamine
+=========
+
+What is it?
+-----------
+
+Gistamine is a Google Chrome extension that allows creating Gists on Github
+
+Features
+--------
+
+Currently it is possible to post one Gist a time only.
+
+TODO
+----
+1.  Posting multiple Gists
+2.  Deleting existent Gists
+3.  I'm open for suggestions!
