@@ -5,15 +5,18 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<style type="text/css" media="screen">
         body {
-          min-width: 459px;
-          overflow-x: hidden;
+            min-width: 459px;
+            min-height: 200px;
+            overflow-x: hidden;
         }
+
         a {
             color: #4183C4;
             font-weight: bold;
             text-decoration: none;
             font-size: 12px;
         }
+
         #bar {
             background: #FCFCFC;//#E9E9E9;
             width: 100%;
@@ -63,15 +66,22 @@
             font-size: 12px;
         }
     </style>
-    <script type="text/javascript" charset="utf-8" src="jquery-1.3.2.js">        
-    </script>
+    <script type="text/javascript" charset="utf-8" src="jquery-1.3.2.js"></script>
     <script type="text/javascript" charset="utf-8">    
-        var $validation_error,
-            $auth_error,
-            $credentials,
-            $gist,
+        var validation_error = "#validation_error",
+            auth_error = "#auth_error",
+            credentials = "#credentials",
+            gist = "#gist",
+            username = "#username",
+            token = "#token",
+            send = "#send",
+            gist_file_name = "#gist_file_name",
+            gist_file_ext = "#gist_file_ext",
+            gist_file_contents = "#gist_file_contents",
+            update = "#update",
             gists = {}, // gists container
             current = null,
+            GIST_URL = "http://gist.github.com/gists",
             i     = 0;  // gists counter
 
     
@@ -84,18 +94,12 @@
         }
     
         function init () {
-            // если пароль/логин заданы, то открыть окно постинга гистов
-            // иначе сохранение логина/пароля
-            $validation_error = $("#validation_error");
-            $auth_error       = $("#auth_error");
-            $credentials      = $("#credentials");
-            $gist             = $("#gist");
             if (!is_empty(localStorage["gist_username"]) &&
                 !is_empty(localStorage["gist_token"])) {
                 show_gist();
-                $("#username").val(localStorage["gist_username"]);
+                $(username).val(localStorage["gist_username"]);
             }
-            $("#username").focus();
+            $(username).focus();
 
         }
     
@@ -104,39 +108,39 @@
         }
         
         function save_credentials () {
-            var username = $("#username").val(),
-                token    = $("#token").val();
-            if (check_credentials(username, token)) {
-                $validation_error.hide();
+            var save_username = $(username).val(),
+                save_token    = $(token).val();
+            if (check_credentials(save_username, save_token)) {
+                $(validation_error).hide();
                 localStorage.clear()
-                localStorage["gist_username"] = username;
-                localStorage["gist_token"] = token;
+                localStorage["gist_username"] = save_username;
+                localStorage["gist_token"] = save_token;
                 
-                $credentials.hide();
-                $gist.show();
-                $auth_error.hide();
-                $("#token").val(""); // clear input
+                $(credentials).hide();
+                $(gist).show();
+                $(auth_error).hide();
+                $(token).val(""); // clear input
             } else {
-                $validation_error.show();
+                $(validation_error).show();
             }
         }
         
         function show_gist() {
-            $credentials.hide();
-            $gist.show();
-            $("#gist_file_name").focus();
+            $(credentials).hide();
+            $(gist).show();
+            $(gist_file_name).focus();
         }
         
         function show_credentials () {
-            $gist.hide();
-            $credentials.show();
-            $("#username").focus();
+            $(gist).hide();
+            $(credentials).show();
+            $(username).focus();
         }
         
         function clear_gist_selectors () {
-            $("#gist_file_ext")[0].selectedIndex = 0;
-            $("#gist_file_name").val("");
-            $("#gist_file_contents").val("");
+            $(gist_file_ext)[0].selectedIndex = 0;
+            $(gist_file_name).val("");
+            $(gist_file_contents).val("");
         }
         
         function retrieve_gist (id) {
@@ -145,9 +149,9 @@
         
         function load_gist (id) {
             var gist = retrieve_gist(id);
-            $("#gist_file_ext")[0].selectedIndex = gist.ext_index;
-            $("#gist_file_name").val(gist.name);
-            $("#gist_file_contents").val(gist.content);
+            $(gist_file_ext)[0].selectedIndex = gist.ext_index;
+            $(gist_file_name).val(gist.name);
+            $(gist_file_contents).val(gist.content);
         }
         
         function remove_gist (id) {
@@ -164,28 +168,21 @@
         }
         
         function on_content_change () {
-            if (current != null && !$("#send").disabled && is_empty($("#gist_file_contents"))) {
-                $("#send").disabled = true;
-            } else if ($("#send").disabled) {
-                delete $("#send").disabled;
+            if (current != null && !$(send).disabled && is_empty($(gist_file_contents))) {
+                $(send).disabled = true;
+            } else if ($(send).disabled) {
+                delete $(send).disabled;
             }
         }
         
         function post_gists (isPublic) {
-            // $("#created_gist").hide();
-            
-            // if (current != null) {
-            //     update_current();
-            // }
-            // clear_gist_selectors();
-            // i = 0;
-            if (!is_empty($("#gist_file_contents").val())) {
+            if (!is_empty($(gist_file_contents).val())) {
                 var data = {
                     "login": localStorage["gist_username"],
                     "token": localStorage["gist_token"],
-                    "file_ext[gistfile1]": $("#gist_file_ext").val(),
-                    "file_name[gistfile1]": $("#gist_file_name").val(),
-                    "file_contents[gistfile1]": $("#gist_file_contents").val()
+                    "file_ext[gistfile1]": $(gist_file_ext).val(),
+                    "file_name[gistfile1]": $(gist_file_name).val(),
+                    "file_contents[gistfile1]": $(gist_file_contents).val()
                 };
                 
                 if (isPublic === false) {
@@ -194,11 +191,11 @@
             
                 $.ajax({
                     type: "POST",
-                    url: "http://gist.github.com/gists",
+                    url: GIST_URL,
                     data: data,
                     error: function (req, textStatus, errorThrown) {
                         if (req.status == 401) {
-                            $auth_error.show();
+                            $(auth_error).show();
                             show_credentials();
                         }
                     },
@@ -225,16 +222,16 @@
          */
         function get_current_gist () {
             return {
-                name: $("#gist_file_name").val(),
-                ext: $("#gist_file_ext").val(),
-                content: $("#gist_file_contents").val(),
-                ext_index: $("#gist_file_ext")[0].selectedIndex
+                name: $(gist_file_name).val(),
+                ext: $(gist_file_ext).val(),
+                content: $(gist_file_contents).val(),
+                ext_index: $(gist_file_ext)[0].selectedIndex
             };
         }
         
         function update_current () {
             if (update_gist(current)) {
-                $("#update").hide();
+                $(update).hide();
                 current = null;
             }
         }
@@ -251,8 +248,8 @@
         }
         
         function validate_gist () {
-            // textarea не пустая
-            if (is_empty($("#gist_file_contents").val())) {
+            // textarea is not empty
+            if (is_empty($(gist_file_contents).val())) {
                 // show warning
                 return false;
             }
